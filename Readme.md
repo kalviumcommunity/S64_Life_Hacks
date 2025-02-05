@@ -10,3 +10,4 @@ WHY THIS PROJECT? This is a light-hearted and whimsical concept that integrates 
 
 
 Render deployment link: https://s64-life-hacks.onrender.com
+
