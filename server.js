@@ -12,7 +12,7 @@ connectDatabase();
 // Middleware for parsing JSON requests
 app.use(express.json());  // Make sure to use express.json to handle POST and PUT body data
 
-// Ping route (testing)
+// Ping route (testing)a
 app.get("/ping", (req, res) => {
   try {
     res.send("pong");
