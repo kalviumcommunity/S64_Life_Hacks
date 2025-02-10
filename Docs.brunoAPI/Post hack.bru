@@ -1,0 +1,20 @@
+meta {
+  name: Post hack
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/api/hacks
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "How to use a spoon as a phone stand",
+    "description": "Place a spoon under your phone for a makeshift phone stand. It works… sort of.",
+    "category": "DIY Disasters"
+  }
+  
+}

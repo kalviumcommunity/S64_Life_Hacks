@@ -7,7 +7,7 @@ const connectDatabase = () => {
             console.log(`MongoDB connected with server: ${data.connection.host}`)
         })
         .catch((err) => {
-            console.error(`Database connection failed: ${err.messsage}`)
+            console.error(`Database connection failed: ${err.message}`)
         })
 } 
 
