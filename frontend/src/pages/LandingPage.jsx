@@ -44,6 +44,15 @@ const LandingPage = () => {
             </Link>
           </div>
         </div>
+        {/* Featured Categories */}
+        <section className="categories">
+        <h2>Featured Categories</h2>
+        <div className="category-list">
+          <div className="category-item"><FaTools /> Genius Hacks</div>
+          <div className="category-item"><FaTimesCircle /> Epic Fails</div>
+          <div className="category-item"><FaRegStar /> DIY Gone Wrong</div>
+        </div>
+      </section>
         
       </section>
 
@@ -99,15 +108,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Featured Categories */}
-      <section className="categories">
-        <h2>Featured Categories</h2>
-        <div className="category-list">
-          <div className="category-item"><FaTools /> Genius Hacks</div>
-          <div className="category-item"><FaTimesCircle /> Epic Fails</div>
-          <div className="category-item"><FaRegStar /> DIY Gone Wrong</div>
-        </div>
-      </section>
 
       {/* User Testimonials */}
       <section className="testimonials">

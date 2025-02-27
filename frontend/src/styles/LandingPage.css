@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  
 }
 
 /* Body Styles */
@@ -84,12 +85,14 @@ body {
 .button-group {
   display: flex;
   gap: 15px;
+  justify-content: center;
+
 }
 
 .cta-button {
   background: #121212;
   color: #fff;
-  padding: 12px 25px;
+  padding: 12px 20px;
   border-radius: 8px;
   text-decoration: none;
   font-size: 1.2rem;
@@ -203,13 +206,12 @@ body {
 
 /* Featured Categories */
 .categories {
-  background: #121212;
   padding: 80px 20px;
 }
 
 .categories h2 {
   font-size: 2.5rem;
-  color: #ff6b81;
+  color: white;
 }
 
 .category-list {
@@ -244,6 +246,10 @@ body {
   gap: 20px;
   justify-content: center;
   margin-top: 20px;
+  
+}
+.share-button{
+  margin-right: 20px; 
 }
 
 .share-icons a {
@@ -255,10 +261,9 @@ body {
 .share-icons a:hover {
   transform: scale(1.2);
 }
-
 /* Footer */
 .footer {
-  background: #121212;
+  background: transparent;
   color: #fff;
   padding: 20px;
   text-align: center;
