@@ -1,4 +1,4 @@
-PROJECT TITLE: Questionable Life Hacks Hub
+PROJECT TITLE: Questionable Life Hacks Hub - HackTok 
 
 PROJECT OVERVIEW: This is a fun, community driven platform that enables users to share, browse, and vote on hilariously impractical hacks in life. The object of this website is to create an engaging and interactive, humorous and creative place where the absurd and questionable solutions to daily problems flow.
 
