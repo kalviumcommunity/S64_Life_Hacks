@@ -14,6 +14,11 @@ const hackSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  created_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", // Reference to the User model
+    required: true, // Ensure a user is always associated with a hack
+  },
   createdAt: {
     type: Date,
     default: Date.now,
