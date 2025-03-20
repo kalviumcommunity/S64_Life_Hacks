@@ -114,3 +114,40 @@
         grid-template-columns: 1fr; /* 1 column for extra small screens */
     }
 }
+/* Common styles for all dropdowns */
+.dropdown {
+    appearance: none; /* Remove default styling for a clean look */
+    width: 100%; /* Make it full width */
+    padding: 10px 15px; /* Add some padding for better spacing */
+    border: 2px solid #ddd; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    background-color: #fff; /* White background */
+    font-size: 16px; /* Base font size */
+    transition: border-color 0.3s ease; /* Add transition for border color */
+  }
+  
+  /* Hover state */
+  .dropdown:hover {
+    border-color: #007BFF; /* Change border color on hover */
+  }
+  
+  /* Focus state */
+  .dropdown:focus {
+    outline: none; /* Remove default outline */
+    border-color: #007BFF; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow for focus */
+  }
+  
+  /* Style the dropdown arrow */
+  .dropdown::after {
+    content: "▼"; /* Arrow down icon */
+    position: absolute; /* Position it inside the dropdown */
+    right: 10px; /* Position it to the right */
+    pointer-events: none; /* Prevent pointer events */
+  }
+  
+  /* Container for dropdowns */
+  .select-container {
+    position: relative; /* Needed for absolute positioning of the arrow */
+    margin-bottom: 1rem; /* Space between dropdowns */
+  }
