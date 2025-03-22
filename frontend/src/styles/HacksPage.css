@@ -1,0 +1,153 @@
+/* Apply styles only to HacksPage */
+.hacks-page {
+    width: 100vw; /* Full width */
+    height: 100vh; /* Full height */
+    display: flex; /* Enable Flexbox */
+    flex-direction: column; /* Arrange children in a column */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    background-color: skyblue; /* Light gray background */
+    overflow: auto;
+}
+
+/* Background and Text Styles */
+.hacks-page .bg-gray-100 {
+    background-color: #f7fafc; /* Light gray background */
+}
+
+.hacks-page .text-center {
+    text-align: center; /* Center text alignment */
+}
+
+.hacks-page .text-gray-600 {
+    color: black; /* Medium gray text color */
+}
+
+.hacks-page .text-gray-800 {
+    color: #2d3748; /* Dark gray text color */
+}
+
+.hacks-page .text-3xl {
+    font-size: 2.5rem; /* Increase text size */
+}
+
+.hacks-page .font-extrabold {
+    font-weight: 800; /* Extra bold font weight */
+}
+
+/* Margin and Padding */
+.hacks-page .mt-2 {
+    margin-top: 1rem; /* Increase margin top spacing */
+}
+
+.hacks-page .mt-4 {
+    margin-top: 1.5rem; /* Increase margin top spacing */
+}
+
+.hacks-page .mt-6 {
+    margin-top: 2rem; /* Increase margin top spacing */
+}
+
+.hacks-page .p-6 {
+    padding: 2rem; /* Increase padding around the container */
+}
+
+/* Button styles */
+.hacks-page .bg-green-500 {
+    background-color: #48bb78; /* Green background for button */
+}
+
+.hacks-page .bg-green-600:hover {
+    background-color: #38a169; /* Darker green on hover */
+}
+
+.hacks-page .text-white {
+    color: white; /* White text color */
+}
+
+.hacks-page .px-4 {
+    padding-left: 1.5rem; /* Increase padding left */
+    padding-right: 1.5rem; /* Increase padding right */
+}
+
+.hacks-page .py-2 {
+    padding-top: 0.75rem; /* Increase padding top */
+    padding-bottom: 0.75rem; /* Increase padding bottom */
+}
+
+.hacks-page .rounded-md {
+    border-radius: 0.5rem; /* Increase border radius for rounded corners */
+}
+
+.hacks-page .shadow-md {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Medium shadow for depth */
+}
+
+.hacks-page .transition {
+    transition: background-color 0.2s ease; /* Smooth transition for hover effects */
+}
+
+/* Grid styles for Hacks */
+.hacks-page .max-w-5xl {
+    max-width: 90%; /* Allow more width for the grid */
+    width: 100%; /* Ensure it takes full width */
+    display: grid; /* Use CSS Grid for layout */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 2rem; /* Increase gap between grid items */
+}
+
+/* Responsive Styles */
+@media (min-width: 640px) {
+    .hacks-page .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
+    }
+}
+
+@media (min-width: 768px) {
+    .hacks-page .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns for medium screens */
+    }
+}
+
+@media (max-width: 639px) {
+    .hacks-page .grid {
+        grid-template-columns: 1fr; /* 1 column for extra small screens */
+    }
+}
+/* Common styles for all dropdowns */
+.dropdown {
+    appearance: none; /* Remove default styling for a clean look */
+    width: 100%; /* Make it full width */
+    padding: 10px 15px; /* Add some padding for better spacing */
+    border: 2px solid #ddd; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    background-color: #fff; /* White background */
+    font-size: 16px; /* Base font size */
+    transition: border-color 0.3s ease; /* Add transition for border color */
+  }
+  
+  /* Hover state */
+  .dropdown:hover {
+    border-color: #007BFF; /* Change border color on hover */
+  }
+  
+  /* Focus state */
+  .dropdown:focus {
+    outline: none; /* Remove default outline */
+    border-color: #007BFF; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow for focus */
+  }
+  
+  /* Style the dropdown arrow */
+  .dropdown::after {
+    content: "▼"; /* Arrow down icon */
+    position: absolute; /* Position it inside the dropdown */
+    right: 10px; /* Position it to the right */
+    pointer-events: none; /* Prevent pointer events */
+  }
+  
+  /* Container for dropdowns */
+  .select-container {
+    position: relative; /* Needed for absolute positioning of the arrow */
+    margin-bottom: 1rem; /* Space between dropdowns */
+  }

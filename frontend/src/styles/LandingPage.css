@@ -1,0 +1,286 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+}
+
+/* Body Styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #121212;
+  color: #fff;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+/* Header and Navbar */
+.header {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.navbar h1 {
+  font-size: 2rem;
+  color: #ff6b81;
+  font-weight: bold;
+}
+
+.navbar ul {
+  list-style-type: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s;
+}
+
+.navbar ul li a:hover {
+  color: #ffcc29;
+}
+
+/* Hero Section */
+.hero {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #ff6b81, #ffcc29);
+  padding: 100px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 1.5rem;
+  max-width: 800px;
+  margin-bottom: 30px;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+
+}
+
+.cta-button {
+  background: #121212;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+}
+
+.cta-button:hover {
+  background: #ffcc29;
+  color: #121212;
+  transform: scale(1.1);
+}
+
+/* About Section */
+.about {
+  padding: 80px 20px;
+}
+
+.about h2 {
+  font-size: 2.5rem;
+  color: #ff6b81;
+}
+
+.about p {
+  font-size: 1.2rem;
+  max-width: 900px;
+  margin: 20px auto;
+  line-height: 1.6;
+}
+
+/* Features Section */
+.features {
+  background: #1e1e1e;
+  padding: 80px 20px;
+}
+
+.features h2 {
+  font-size: 2.5rem;
+  color: #ffcc29;
+}
+
+.features-list {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.feature-item {
+  flex: 1;
+  text-align: center;
+  max-width: 300px;
+}
+
+.feature-item h3 {
+  font-size: 1.8rem;
+  color: #ff6b81;
+  margin-top: 10px;
+}
+
+.feature-item p {
+  font-size: 1.1rem;
+  color: #ffcc29;
+}
+
+/* Trending Hacks Section */
+.trending {
+  background: #1a1a1a;
+  padding: 80px 20px;
+}
+
+.trending h2 {
+  font-size: 2.5rem;
+  color: #ff6b81;
+}
+
+.trending-list {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.trending-item {
+  background: #ff6b81;
+  color: #121212;
+  padding: 15px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+/* Testimonials Section */
+.testimonials {
+  background: #1e1e1e;
+  padding: 80px 20px;
+}
+
+.testimonials h2 {
+  font-size: 2.5rem;
+  color: #ffcc29;
+}
+
+.testimonial-item {
+  background: #ffcc29;
+  color: #121212;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+/* Featured Categories */
+.categories {
+  padding: 80px 20px;
+}
+
+.categories h2 {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.category-list {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.category-item {
+  background: #ffcc29;
+  color: #121212;
+  padding: 15px;
+  border-radius: 10px;
+  width: 200px;
+  text-align: center;
+}
+
+/* Social Media Share */
+.social-share {
+  background: #1a1a1a;
+  padding: 50px 20px;
+}
+
+.social-share h2 {
+  font-size: 2.5rem;
+  color: #ffcc29;
+}
+
+.share-icons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+  
+}
+.share-button{
+  margin-right: 20px; 
+}
+
+.share-icons a {
+  font-size: 2rem;
+  color: #ff6b81;
+  transition: transform 0.3s;
+}
+
+.share-icons a:hover {
+  transform: scale(1.2);
+}
+/* Footer */
+.footer {
+  background: transparent;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar ul {
+      flex-direction: column;
+  }
+
+  .hero h2 {
+      font-size: 2.5rem;
+  }
+
+  .features-list, .trending-list, .category-list {
+      flex-direction: column;
+      align-items: center;
+  }
+}
