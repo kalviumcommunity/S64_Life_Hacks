@@ -23,6 +23,19 @@ router.get("/hacks", async (req, res) => {
     res.status(500).json({ error: "Error fetching hacks" });
   }
 });
+router.get("/hacks/:id", async (req, res) => {
+  try {
+    const hack = await Hack.findById(req.params.id);
+    if (!hack) {
+      return res.status(404).json({ error: "Hack not found" });
+    }
+    res.json(hack);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 // **Update** - Update an existing hack by ID
 router.put("/hacks/:id", async (req, res) => {
