@@ -1,35 +1,57 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import HackCard from "../components/HackCard";
-import "../styles/HacksPage.css"; // Ensure CSS exists
+import "../styles/HacksPage.css";
 
 const HacksPage = () => {
   const [hacks, setHacks] = useState([]);
-  const [users, setUsers] = useState([]); // Store users from API
-  const [selectedUser, setSelectedUser] = useState(""); // Track selected user
-  const [loading, setLoading] = useState(false); // Track loading state
-  const [error, setError] = useState(""); // Store errors
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Fetch hacks from API (filtered by user if selected)
   useEffect(() => {
     fetchHacks();
   }, [selectedUser]);
 
   const fetchHacks = async () => {
     setLoading(true);
-    setError(""); // Reset errors
-
-    const url = selectedUser ? `http://localhost:8000/api/hacks?created_by=${selectedUser}` : "http://localhost:8000/api/hacks";
-    
+    setError("");
     try {
-      const response = await fetch(url);
-      const data = await response.json();
+      const [mongoResponse, postgresResponse] = await Promise.all([
+        fetch(`http://localhost:8000/api/mongo/hacks`),
+        fetch(`http://localhost:8000/api/postgres/hacks`),
+      ]);
 
-      if (response.ok) {
-        setHacks(data);
-      } else {
-        setError("Failed to load hacks. Please try again.");
+      const [mongoData, postgresData] = await Promise.all([
+        mongoResponse.json(),
+        postgresResponse.json(),
+      ]);
+
+      let combinedHacks = [
+        ...mongoData.map((hack) => ({
+          ...hack,
+          id: hack._id?.toString(), // Ensure ID is a string
+          created_by: hack.created_by?.toString(), // Convert to string for filtering
+          source: "MongoDB",
+        })),
+        ...postgresData.map((hack) => ({
+          ...hack,
+          id: hack.id?.toString(), // Ensure ID consistency
+          created_by: hack.created_by?.toString(), // Ensure consistency
+          source: "PostgreSQL",
+        })),
+      ];
+
+      console.log("Fetched Hacks:", combinedHacks);
+      console.log("Selected User ID:", selectedUser);
+
+      // Apply filtering if a user is selected
+      if (selectedUser) {
+        combinedHacks = combinedHacks.filter((hack) => hack.created_by === selectedUser);
       }
+
+      setHacks(combinedHacks);
     } catch (err) {
       setError("Error fetching hacks. Please check your connection.");
       console.error("Error fetching hacks:", err);
@@ -38,36 +60,56 @@ const HacksPage = () => {
     }
   };
 
-  // Fetch users for dropdown
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/users");
-      const data = await response.json();
+      const [mongoResponse, postgresResponse] = await Promise.all([
+        fetch("http://localhost:8000/api/mongo/users"),
+        fetch("http://localhost:8000/api/postgres/users"),
+      ]);
 
-      if (response.ok) {
-        setUsers(data);
-      } else {
-        setError("Failed to load users.");
-      }
+      const [mongoUsers, postgresUsers] = await Promise.all([
+        mongoResponse.json(),
+        postgresResponse.json(),
+      ]);
+
+      const allUsers = [
+        ...mongoUsers.map((user) => ({
+          id: user._id?.toString(), // Convert MongoDB ObjectId to string
+          name: user.name,
+          email: user.email,
+          source: "MongoDB",
+        })),
+        ...postgresUsers.map((user) => ({
+          id: user.id?.toString(), // Ensure consistency
+          name: user.name,
+          email: user.email,
+          source: "PostgreSQL",
+        })),
+      ];
+
+      console.log("Fetched Users:", allUsers);
+      setUsers(allUsers);
     } catch (err) {
       console.error("Error fetching users:", err);
       setError("Error fetching users. Please try again.");
     }
   };
 
-  // Handle deletion of hacks
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, source) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/hacks/${id}`, {
-        method: "DELETE",
-      });
+      const apiUrl =
+        source === "MongoDB"
+          ? `http://localhost:8000/api/mongo/hacks/${id}`
+          : `http://localhost:8000/api/postgres/hacks/${id}`;
+
+      const response = await fetch(apiUrl, { method: "DELETE" });
 
       if (response.ok) {
-        setHacks((prevHacks) => prevHacks.filter((hack) => hack._id !== id));
+        setHacks((prevHacks) => prevHacks.filter((hack) => hack.id !== id));
       } else {
         setError("Failed to delete hack.");
       }
@@ -82,40 +124,43 @@ const HacksPage = () => {
       <h1 className="text-3xl font-extrabold text-center text-gray-800">🔥 Latest Hacks 🔥</h1>
       <p className="text-center text-gray-600 mt-2">Discover and vote for the craziest life hacks!</p>
 
-      {/* Error Message */}
       {error && <div className="text-red-500 mt-2">{error}</div>}
 
-      {/* User filter dropdown */}
+      {/* User Filter Dropdown */}
       <div className="select-container mt-4">
         <label className="font-semibold">Filter by User:</label>
         <select
           value={selectedUser}
           onChange={(e) => setSelectedUser(e.target.value)}
-          className="dropdown ml-2" // Updated to include the new class
+          className="dropdown ml-2"
           required
         >
           <option value="">All Users</option>
           {users.map((user) => (
-            <option key={user._id} value={user._id}>
+            <option key={user.id} value={user.id}>
               {user.name} ({user.email})
             </option>
           ))}
         </select>
       </div>
 
+      {/* Add Hack Button */}
       <div className="text-center mt-4">
-        <Link to="/add-hack" className="bg-green-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-green-600 transition">
+        <Link
+          to="/add-hack"
+          className="bg-green-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-green-600 transition"
+        >
           ➕ Add Hack
         </Link>
       </div>
 
-      {/* Loading State */}
       {loading && <p className="text-center text-gray-600 mt-4">Loading hacks...</p>}
 
+      {/* Display Hacks */}
       <div className="max-w-5xl mx-auto mt-6 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {!loading && hacks.length > 0 ? (
           hacks.map((hack) => (
-            <HackCard key={hack._id} {...hack} onDelete={handleDelete} />
+            <HackCard key={hack.id} {...hack} onDelete={() => handleDelete(hack.id, hack.source)} />
           ))
         ) : (
           !loading && <p className="text-center text-gray-600">No hacks available.</p>

@@ -1,8 +1,8 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
-const mongoose = require("mongoose"); // Import mongoose for ObjectId validation
-const Hack = require("../models/schema"); // Import Hack model
-const User = require("../models/user"); // Import User model
+const mongoose = require("mongoose"); 
+const Hack = require("../models/schema"); 
+const User = require("../models/user"); 
 
 const router = express.Router();
 
@@ -17,7 +17,8 @@ const hackValidationRules = [
     .custom((value) => mongoose.Types.ObjectId.isValid(value))
     .withMessage("Invalid User ID format"),
 ];
-// 🔹 Create a new hack (Prevents duplicate titles)
+
+// 🔹 Create a new hack
 router.post("/hacks", hackValidationRules, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -27,7 +28,6 @@ router.post("/hacks", hackValidationRules, async (req, res) => {
   try {
     let { title, description, category, created_by } = req.body;
 
-    // Convert `created_by` to ObjectId
     created_by = new mongoose.Types.ObjectId(created_by);
 
     // Check if user exists
@@ -36,7 +36,7 @@ router.post("/hacks", hackValidationRules, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // ✅ Check if hack with the same title exists
+    // ✅ Prevent duplicate hacks with the same title
     const existingHack = await Hack.findOne({ title });
     if (existingHack) {
       return res.status(400).json({ error: "Hack with this title already exists" });
@@ -44,13 +44,16 @@ router.post("/hacks", hackValidationRules, async (req, res) => {
 
     const hack = new Hack({ title, description, category, created_by });
     await hack.save();
-    res.status(201).json(hack);
+
+    // ✅ Ensure created_by is returned as a string
+    const formattedHack = { ...hack.toObject(), created_by: created_by.toString() };
+
+    res.status(201).json(formattedHack);
   } catch (error) {
     console.error("Error creating hack:", error);
     res.status(500).json({ error: "Error creating hack" });
   }
 });
-
 
 // 🔹 Get all hacks OR filter by `created_by`
 router.get("/hacks", async (req, res) => {
@@ -65,30 +68,36 @@ router.get("/hacks", async (req, res) => {
       query.created_by = created_by;
     }
 
-    const hacks = await Hack.find(query).populate("created_by", "name email");
-    if (hacks.length === 0) {
-      return res.status(404).json({ message: "No hacks found" });
-    }
+    const hacks = await Hack.find(query).populate("created_by", "name email").lean();
 
-    res.status(200).json(hacks);
+    // ✅ Convert `created_by` ObjectId to string for consistency
+    const formattedHacks = hacks.map(hack => ({
+      ...hack,
+      created_by: hack.created_by?._id.toString() || hack.created_by
+    }));
+
+    res.status(200).json(formattedHacks);
   } catch (error) {
     console.error("Error fetching hacks:", error);
     res.status(500).json({ error: "Error fetching hacks" });
   }
 });
+
+// 🔹 Get a hack by ID
 router.get("/hacks/:id", async (req, res) => {
   try {
-    const hack = await Hack.findById(req.params.id);
+    const hack = await Hack.findById(req.params.id).lean();
     if (!hack) {
       return res.status(404).json({ error: "Hack not found" });
     }
+
+    hack.created_by = hack.created_by.toString();
     res.json(hack);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching hack:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 // 🔹 Update an existing hack
 router.put("/hacks/:id", hackValidationRules, async (req, res) => {
@@ -110,12 +119,13 @@ router.put("/hacks/:id", hackValidationRules, async (req, res) => {
       req.params.id,
       { title, description, category, created_by },
       { new: true, runValidators: true }
-    );
+    ).lean();
 
     if (!hack) {
       return res.status(404).json({ error: "Hack not found" });
     }
 
+    hack.created_by = hack.created_by.toString();
     res.json(hack);
   } catch (error) {
     console.error("Error updating hack:", error);
@@ -146,7 +156,7 @@ router.delete("/hacks/:id", async (req, res) => {
 // 🔹 Get all users
 router.get("/users", async (req, res) => {
   try {
-    const users = await User.find({}, "name email");
+    const users = await User.find({}, "name email").lean();
 
     if (users.length === 0) {
       return res.status(404).json({ message: "No users found" });
@@ -159,37 +169,32 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// 🔹 Create a new user
-router.post(
-  "/users",
-  [
-    body("name").notEmpty().withMessage("Name is required"),
-    body("email").isEmail().withMessage("Valid email is required"),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+// 🔹 Get a user by ID
+router.get("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid User ID format" });
     }
 
-    try {
-      const { name, email } = req.body;
-
-      // Check if the email already exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ error: "Email already in use" });
-      }
-
-      const newUser = new User({ name, email });
-      await newUser.save();
-
-      res.status(201).json(newUser);
-    } catch (error) {
-      console.error("Error creating user:", error);
-      res.status(500).json({ error: "Error creating user" });
+    const user = await User.findById(id, "name email").lean();
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    const userHacks = await Hack.find({ created_by: id }).lean();
+
+    const formattedHacks = userHacks.map(hack => ({
+      ...hack,
+      created_by: hack.created_by.toString()
+    }));
+
+    res.status(200).json({ user, hacks: formattedHacks });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Error fetching user" });
   }
-);
+});
 
 module.exports = router;
