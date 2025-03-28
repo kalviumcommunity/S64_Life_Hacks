@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../styles/UpdateHackPage.css"; // Ensure the CSS file exists
+import "../styles/UpdateHackPage.css";
 
 const UpdateHackPage = () => {
   const { id } = useParams();
@@ -8,28 +8,34 @@ const UpdateHackPage = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [createdBy, setCreatedBy] = useState(""); 
-  const [error, setError] = useState(""); // Error handling state
-  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHack = async () => {
       try {
-        // Determine the correct API route (MongoDB or PostgreSQL)
         const isMongo = id.startsWith("mongo-");
+        const hackId = isMongo ? id.replace("mongo-", "") : id.replace("postgres-", "");
         const apiURL = isMongo 
-          ? `http://localhost:8000/api/mongo/hacks/${id.replace("mongo-", "")}`
-          : `http://localhost:8000/api/postgres/hacks/${id.replace("postgres-", "")}`;
+          ? `http://localhost:8000/api/mongo/hacks/${hackId}`
+          : `http://localhost:8000/api/postgres/hacks/${hackId}`;
 
+        console.log("📌 Fetching hack from:", apiURL);
         const response = await fetch(apiURL);
-        if (!response.ok) throw new Error("Failed to fetch hack details");
-        
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch hack. Status: ${response.status}`);
+        }
+
         const data = await response.json();
+        console.log("✅ Hack data received:", data);
         setTitle(data.title);
         setDescription(data.description);
         setCategory(data.category);
-        setCreatedBy(isMongo ? `mongo-${data.created_by}` : `postgres-${data.created_by}`);
+        setCreatedBy(data.created_by?.toString()); // Ensure string format
       } catch (err) {
+        console.error("❌ Fetch error:", err);
         setError("Error loading hack details. Please try again.");
       } finally {
         setLoading(false);
@@ -41,30 +47,47 @@ const UpdateHackPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Reset errors
+    setError("");
 
-    const updatedHack = { title, description, category, created_by: createdBy.replace("mongo-", "").replace("postgres-", "") };
-    const isMongo = createdBy.startsWith("mongo-");
+    const isMongo = id.startsWith("mongo-");
+    const hackId = id.replace("mongo-", "").replace("postgres-", "");
     const apiURL = isMongo
-      ? `http://localhost:8000/api/mongo/hacks/${id.replace("mongo-", "")}`
-      : `http://localhost:8000/api/postgres/hacks/${id.replace("postgres-", "")}`;
+      ? `http://localhost:8000/api/mongo/hacks/${hackId}`
+      : `http://localhost:8000/api/postgres/hacks/${hackId}`;
+
+    const formattedCreatedBy = createdBy.startsWith("postgres-")
+      ? Number(createdBy.replace("postgres-", ""))
+      : createdBy.replace("mongo-", "");
+
+    const updatedHack = {
+      title,
+      description,
+      category,
+      created_by: formattedCreatedBy,
+    };
 
     try {
+      console.log("📤 Updating hack at:", apiURL);
+      console.log("🔄 Payload being sent:", JSON.stringify(updatedHack));
+
       const response = await fetch(apiURL, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedHack),
       });
 
+      const responseData = await response.json();
+      console.log("🔄 Server response:", responseData);
+
       if (response.ok) {
-        navigate("/hacks"); // Redirect on success
+        console.log("✅ Hack updated successfully!");
+        navigate("/hacks");
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || "Failed to update hack.");
+        setError(responseData.error || "Failed to update hack.");
       }
     } catch (error) {
+      console.error("❌ Error updating hack:", error);
       setError("An unexpected error occurred. Please try again.");
-      console.error("Error updating hack:", error);
     }
   };
 
@@ -86,6 +109,8 @@ const UpdateHackPage = () => {
 
           <label>Category:</label>
           <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} required />
+
+          <input type="hidden" value={createdBy} />
 
           <button type="submit" className="update-hack-button">Update Hack</button>
         </form>
