@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const connectDatabase = require("./database");  // MongoDB connection
-const { connectPostgres } = require("./postgresDatabase");  // PostgreSQL connection
+const { sequelize, connectPostgres } = require("./postgresDatabase");  // PostgreSQL connection
 const hackRoutes = require("./routes/routes"); // MongoDB routes
 const hackRoutesSQL = require("./routes/routesSQL"); // PostgreSQL routes
 
@@ -31,14 +31,15 @@ app.get("/ping", (req, res) => {
 
 // Home Route with DB Status
 app.get("/", async (req, res) => {
+  const mongoStatus = mongoose.connection.readyState === 1 ? "Connected to MongoDB" : "Not Connected to MongoDB";
   try {
-    const mongoStatus = mongoose.connection.readyState === 1 ? "Connected to MongoDB" : "Not Connected to MongoDB";
-    await connectPostgres(); // Ensures the connection is active
+    await sequelize.authenticate(); // Just test if it's connected
     res.json({ message: "Welcome to the API", mongo_status: mongoStatus, postgres_status: "Connected to PostgreSQL" });
   } catch (error) {
     res.json({ message: "Welcome to the API", mongo_status: mongoStatus, postgres_status: "Not Connected to PostgreSQL" });
   }
 });
+
 
 // MongoDB Routes
 app.use("/api/mongo", hackRoutes);  // Prefix all MongoDB hack routes with /api

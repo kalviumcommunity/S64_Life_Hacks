@@ -113,23 +113,34 @@ router.post("/hacks", async (req, res) => {
 router.put("/hacks/:id", async (req, res) => {
   const { id } = req.params;
   const { title, description, category, created_by } = req.body;
+
+  console.log(`🔍 Update request received for Hack ID: ${id}`);
+  console.log("📥 Received Data:", req.body);
+
   try {
     const hack = await HackSQL.findByPk(id);
     if (!hack) {
+      console.log("⚠️ Hack not found in PostgreSQL.");
       return res.status(404).json({ error: "Hack not found" });
     }
+
+    console.log("✅ Hack found. Proceeding with update...");
+
     const updatedHack = await hack.update({
       title,
       description,
       category,
       created_by,
     });
+
+    console.log("✅ Hack updated successfully:", updatedHack);
     res.json(updatedHack);
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error updating hack:", error);
     res.status(500).json({ error: "Failed to update hack" });
   }
 });
+
 
 // 8. Delete a hack
 router.delete("/hacks/:id", async (req, res) => {
