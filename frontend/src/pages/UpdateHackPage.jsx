@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/UpdateHackPage.css"; // Keep your provided CSS
+import config from "../config";
 
 const UpdateHackPage = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const UpdateHackPage = () => {
 
     const isMongo = id.startsWith("mongo-");
     const hackID = id.replace(/^(mongo-|postgres-)/, "");
-    const apiURL = `http://localhost:8000/api/${isMongo ? "mongo" : "postgres"}/hacks/${hackID}`;
+    const apiURL = `${config.API_URL}/api/${isMongo ? "mongo" : "postgres"}/hacks/${hackID}`;
 
     console.log("Fetching hack from:", apiURL); // Debugging log
 
@@ -53,7 +54,7 @@ const UpdateHackPage = () => {
 
     const isMongo = id.startsWith("mongo-");
     const hackID = id.replace(/^(mongo-|postgres-)/, "");
-    const apiURL = `http://localhost:8000/api/${isMongo ? "mongo" : "postgres"}/hacks/${hackID}`;
+    const apiURL = `${config.API_URL}/api/${isMongo ? "mongo" : "postgres"}/hacks/${hackID}`;
 
     const updatedHack = { title, description, category, created_by: createdBy };
 
