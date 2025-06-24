@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import HackCard from "../components/HackCard";
 import "../styles/HacksPage.css";
+import config from "../config";
 
 const HacksPage = () => {
   const [hacks, setHacks] = useState([]);
@@ -19,8 +20,8 @@ const HacksPage = () => {
     setError("");
     try {
       const [mongoResponse, postgresResponse] = await Promise.all([
-        fetch(`http://localhost:8000/api/mongo/hacks`),
-        fetch(`http://localhost:8000/api/postgres/hacks`),
+        fetch(`${config.API_URL}/api/mongo/hacks`),
+        fetch(`${config.API_URL}/api/postgres/hacks`),
       ]);
 
       const [mongoData, postgresData] = await Promise.all([
@@ -67,8 +68,8 @@ const HacksPage = () => {
   const fetchUsers = async () => {
     try {
       const [mongoResponse, postgresResponse] = await Promise.all([
-        fetch("http://localhost:8000/api/mongo/users"),
-        fetch("http://localhost:8000/api/postgres/users"),
+        fetch(`${config.API_URL}/api/mongo/users`),
+        fetch(`${config.API_URL}/api/postgres/users`),
       ]);
 
       const [mongoUsers, postgresUsers] = await Promise.all([
@@ -103,8 +104,8 @@ const HacksPage = () => {
     try {
       const apiUrl =
         source === "MongoDB"
-          ? `http://localhost:8000/api/mongo/hacks/${id}`
-          : `http://localhost:8000/api/postgres/hacks/${id}`;
+          ? `${config.API_URL}/api/mongo/hacks/${id}`
+          : `${config.API_URL}/api/postgres/hacks/${id}`;
 
       const response = await fetch(apiUrl, { method: "DELETE" });
 

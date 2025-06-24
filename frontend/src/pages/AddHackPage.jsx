@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/AddHackPage.css"; // Ensure this CSS exists
+import config from "../config";
 
 const AddHackPage = () => {
   const [title, setTitle] = useState("");
@@ -16,8 +17,8 @@ const AddHackPage = () => {
     const fetchUsers = async () => {
       try {
         const [mongoResponse, postgresResponse] = await Promise.all([
-          fetch("http://localhost:8000/api/mongo/users"),
-          fetch("http://localhost:8000/api/postgres/users"),
+          fetch(`${config.API_URL}/api/mongo/users`),
+          fetch(`${config.API_URL}/api/postgres/users`),
         ]);
 
         const [mongoUsers, postgresUsers] = await Promise.all([
@@ -64,8 +65,8 @@ const AddHackPage = () => {
     const dbSource = selectedUserObj.source; // MongoDB or PostgreSQL
     const apiUrl =
       dbSource === "MongoDB"
-        ? "http://localhost:8000/api/mongo/hacks"
-        : "http://localhost:8000/api/postgres/hacks";
+        ? `${config.API_URL}/api/mongo/hacks`
+        : `${config.API_URL}/api/postgres/hacks`;
 
     const newHack = {
       title,
