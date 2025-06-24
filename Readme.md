@@ -10,6 +10,6 @@ WHY THIS PROJECT? This is a light-hearted and whimsical concept that integrates 
 
 
 Backend Render deployment link: https://s64-life-hacks.onrender.com
-Frontend deployment link: https://quiet-biscochitos-8c51cd.netlify.app/
+Frontend deployment link: https://lifeehacks.netlify.app/
 
 
