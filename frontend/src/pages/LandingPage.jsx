@@ -1,9 +1,43 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaHome, FaThumbsUp, FaRegStar, FaUsers, FaShareAlt, FaTools, FaTimesCircle } from "react-icons/fa";
+import { 
+  FaHome, 
+  FaThumbsUp, 
+  FaRegStar, 
+  FaUsers, 
+  FaShareAlt, 
+  FaTools, 
+  FaTimesCircle, 
+  FaLightbulb, 
+  FaRocket, 
+  FaTwitter, 
+  FaInstagram 
+} from "react-icons/fa";
 import "../styles/LandingPage.css";
 
 const LandingPage = () => {
+  useEffect(() => {
+    // Add scroll animation for elements
+    const animateOnScroll = () => {
+      const elements = document.querySelectorAll('.feature-item, .hack-item, .testimonial, .category-item');
+      
+      elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.2;
+        
+        if (elementPosition < screenPosition) {
+          element.classList.add('animate');
+        }
+      });
+    };
+    
+    window.addEventListener('scroll', animateOnScroll);
+    // Initial check
+    animateOnScroll();
+    
+    return () => window.removeEventListener('scroll', animateOnScroll);
+  }, []);
+  
   return (
     <div className="landing-page">
       {/* Header Section */}
@@ -19,11 +53,6 @@ const LandingPage = () => {
             <li>
               <a href="#about">
                 <FaThumbsUp className="icon" /> Features
-              </a>
-            </li>
-            <li>
-              <a href="#signup">
-                <FaUsers className="icon" /> Join
               </a>
             </li>
           </ul>
@@ -46,14 +75,22 @@ const LandingPage = () => {
         </div>
         {/* Featured Categories */}
         <section className="categories">
-        <h2>Featured Categories</h2>
-        <div className="category-list">
-          <div className="category-item"><FaTools /> Genius Hacks</div>
-          <div className="category-item"><FaTimesCircle /> Epic Fails</div>
-          <div className="category-item"><FaRegStar /> DIY Gone Wrong</div>
-        </div>
-      </section>
-        
+          <h2>Featured Categories</h2>
+          <div className="category-list">
+            <div className="category-item">
+              <FaLightbulb />
+              <h3>Genius Hacks</h3>
+            </div>
+            <div className="category-item">
+              <FaTimesCircle />
+              <h3>Epic Fails</h3>
+            </div>
+            <div className="category-item">
+              <FaRegStar />
+              <h3>DIY Gone Wrong</h3>
+            </div>
+          </div>
+        </section>
       </section>
 
       {/* About Section */}
@@ -62,14 +99,15 @@ const LandingPage = () => {
           <h2>What is HackTok?</h2>
           <div className="about-image">
             <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMNudnQPh-nNjMXISQXMiwsSU3Gz-Sbue8AQ&s"
+              src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
               alt="Life Hacks"
             />
           </div>
           <p>
             HackTok is a fun, community-driven platform where users submit the
-            most impractical life hacks. It is all about creativity, humor, and
-            having a good time!
+            most impractical life hacks. It's all about creativity, humor, and
+            having a good time! Join thousands of users who are already sharing
+            and laughing at the most outrageous DIY solutions.
           </p>
         </div>
       </section>
@@ -78,9 +116,21 @@ const LandingPage = () => {
       <section className="trending-hacks">
         <h2>Trending Hacks</h2>
         <div className="hack-list">
-          <div className="hack-item">🔥 Toothpaste as a Car Scratch Remover</div>
-          <div className="hack-item">⚡ Charging Your Phone with an Onion</div>
-          <div className="hack-item">💡 DIY Spoon Phone Stand</div>
+          <div className="hack-item">
+            <span className="hack-emoji">🔥</span>
+            <h3>Toothpaste as a Car Scratch Remover</h3>
+            <p className="hack-votes">1.2K votes</p>
+          </div>
+          <div className="hack-item">
+            <span className="hack-emoji">⚡</span>
+            <h3>Charging Your Phone with an Onion</h3>
+            <p className="hack-votes">987 votes</p>
+          </div>
+          <div className="hack-item">
+            <span className="hack-emoji">💡</span>
+            <h3>DIY Spoon Phone Stand</h3>
+            <p className="hack-votes">756 votes</p>
+          </div>
         </div>
       </section>
 
@@ -90,19 +140,19 @@ const LandingPage = () => {
           <h2>Key Features</h2>
           <div className="features-list">
             <div className="feature-item">
-              <FaThumbsUp size={50} color="#F39C12" />
+              <FaThumbsUp size={60} />
               <h3>Vote on Hacks</h3>
-              <p>Cast your vote for the most entertaining hacks!</p>
+              <p>Cast your vote for the most entertaining and outrageous hacks from around the world!</p>
             </div>
             <div className="feature-item">
-              <FaRegStar size={50} color="#F39C12" />
+              <FaRocket size={60} />
               <h3>Submit Your Hacks</h3>
-              <p>Share your own creative hacks with the world!</p>
+              <p>Share your own creative (or hilariously impractical) hacks with our growing community!</p>
             </div>
             <div className="feature-item">
-              <FaUsers size={50} color="#F39C12" />
+              <FaUsers size={60} />
               <h3>Join the Community</h3>
-              <p>Interact with users and share laughs together!</p>
+              <p>Connect with like-minded hack enthusiasts and share laughs over the most absurd solutions!</p>
             </div>
           </div>
         </div>
@@ -112,29 +162,73 @@ const LandingPage = () => {
       {/* User Testimonials */}
       <section className="testimonials">
         <h2>What Users Are Saying</h2>
-        <p>"HackTok made my day! Funniest hacks ever! 😂" - Alex</p>
-        <p>"I tried a hack... it failed miserably, but I laughed so hard!" - Sarah</p>
+        <div className="testimonial-container">
+          <div className="testimonial">
+            <p>"HackTok made my day! The funniest hacks I've ever seen. I spend hours scrolling through new content every day! 😂"</p>
+            <div className="testimonial-author">
+              <div className="author-avatar">A</div>
+              <div className="author-name">Alex T.</div>
+            </div>
+          </div>
+          <div className="testimonial">
+            <p>"I tried a hack from this site... it failed miserably, but I laughed so hard that it was totally worth it! Now I'm addicted to finding the most ridiculous ones."</p>
+            <div className="testimonial-author">
+              <div className="author-avatar">S</div>
+              <div className="author-name">Sarah M.</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Social Media Share Section */}
       <section className="social-share">
         <h2>Share the Fun!</h2>
         <p>Spread the funniest hacks with your friends!</p>
-        <button className="share-button"><FaShareAlt /> Share on Twitter</button>
-        <button className="share-button"><FaShareAlt /> Share on Instagram</button>
+        <div className="share-buttons">
+          <button className="share-button"><FaTwitter /> Share on Twitter</button>
+          <button className="share-button"><FaInstagram /> Share on Instagram</button>
+        </div>
+        <div className="social-stats">
+          <div className="stat-item">
+            <span className="stat-number">10K+</span>
+            <span className="stat-label">Active Users</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">5K+</span>
+            <span className="stat-label">Hacks Shared</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">50K+</span>
+            <span className="stat-label">Monthly Views</span>
+          </div>
+        </div>
       </section>
 
       {/* Call to Action Section */}
       <section className="cta">
-        <p>Ready to join the funniest hack community?</p>
-        <a href="#signup" className="cta-button">
-          Join Now
-        </a>
+        <div className="cta-content">
+          <h2>Ready to Explore?</h2>
+          <p>Check out our amazing collection of life hacks!</p>
+          <div className="cta-buttons">
+            <Link to="/hacks" className="cta-button">
+              Explore Hacks
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Footer Section */}
       <footer className="footer">
-        <p>© 2025 HackTok. All rights reserved.</p>
+        <div className="footer-content">
+          <div className="footer-logo">HackTok</div>
+          <div className="footer-links">
+            <a href="#">About</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Contact</a>
+          </div>
+           <p>© 2025 HackTok. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );

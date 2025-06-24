@@ -1,13 +1,16 @@
 const express = require("express");
 const HackSQL = require("../models/hackSQL");
 const UserSQL = require("../models/userSQL");
+const authMiddleware = require("../middlewares/authMiddleware");
+const bcrypt = require('bcryptjs');
+
 const router = express.Router();
 
 // 1. Fetch all users
 router.get("/users", async (req, res) => {
   try {
     const users = await UserSQL.findAll({
-      attributes: ["id", "name", "email"], // Fetch specific columns
+      attributes: ["id", "name", "email"],
     });
     res.json(users);
   } catch (err) {
@@ -16,7 +19,32 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// 2. Fetch hacks created by a specific user
+// 2. Create a new user (corrected)
+router.post("/users", async (req, res) => {
+  const { name, email, password } = req.body;
+  try {
+    const existingUser = await UserSQL.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await UserSQL.create({ 
+      name, 
+      email, 
+      password: hashedPassword 
+    });
+    res.status(201).json({
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to create user" });
+  }
+});
+
+// 3. Fetch hacks created by a specific user
 router.get("/hacks/user/:userId", async (req, res) => {
   const { userId } = req.params;
   try {
@@ -24,7 +52,7 @@ router.get("/hacks/user/:userId", async (req, res) => {
       where: { created_by: userId },
       include: {
         model: UserSQL,
-        attributes: ["name", "email"], // Include user details
+        attributes: ["name", "email"],
       },
     });
     res.json(hacks);
@@ -34,16 +62,14 @@ router.get("/hacks/user/:userId", async (req, res) => {
   }
 });
 
-// 3. Fetch all hacks (Corrected Placement)
+// 4. Fetch all hacks
 router.get("/hacks", async (req, res) => {
   try {
     const hacks = await HackSQL.findAll({
-      include: [
-        {
-          model: UserSQL,
-          attributes: ["name", "email"], // Include user details
-        },
-      ],
+      include: [{
+        model: UserSQL,
+        attributes: ["name", "email"],
+      }],
     });
     res.json(hacks);
   } catch (error) {
@@ -52,14 +78,14 @@ router.get("/hacks", async (req, res) => {
   }
 });
 
-// 4. Fetch a hack by ID
+// 5. Fetch a hack by ID
 router.get("/hacks/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const hack = await HackSQL.findByPk(id, {
       include: {
         model: UserSQL,
-        attributes: ["name", "email"], // Include user details
+        attributes: ["name", "email"],
       },
     });
     if (!hack) {
@@ -72,30 +98,12 @@ router.get("/hacks/:id", async (req, res) => {
   }
 });
 
-// 5. Create a new user
-router.post("/users", async (req, res) => {
-  const { name, email, password } = req.body;
+// 6. Create a new hack (protected)
+router.post("/hacks", authMiddleware, async (req, res) => {
+  const { title, description, category } = req.body;
+  const created_by = req.user.id; // Get user ID from auth middleware
+  
   try {
-    const existingUser = await UserSQL.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ error: "Email already in use" });
-    }
-    const newUser = await UserSQL.create({ name, email, password });
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to create user" });
-  }
-});
-
-// 6. Create a new hack
-router.post("/hacks", async (req, res) => {
-  const { title, description, category, created_by } = req.body;
-  try {
-    const userExists = await UserSQL.findByPk(created_by);
-    if (!userExists) {
-      return res.status(400).json({ error: "User not found" });
-    }
     const newHack = await HackSQL.create({
       title,
       description,
@@ -110,46 +118,48 @@ router.post("/hacks", async (req, res) => {
 });
 
 // 7. Update a hack
-router.put("/hacks/:id", async (req, res) => {
+router.put("/hacks/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { title, description, category, created_by } = req.body;
-
-  console.log(`🔍 Update request received for Hack ID: ${id}`);
-  console.log("📥 Received Data:", req.body);
+  const { title, description, category } = req.body;
 
   try {
     const hack = await HackSQL.findByPk(id);
     if (!hack) {
-      console.log("⚠️ Hack not found in PostgreSQL.");
       return res.status(404).json({ error: "Hack not found" });
     }
 
-    console.log("✅ Hack found. Proceeding with update...");
+    // Verify the user owns this hack
+    if (hack.created_by !== req.user.id) {
+      return res.status(403).json({ error: "Not authorized to update this hack" });
+    }
 
     const updatedHack = await hack.update({
       title,
       description,
-      category,
-      created_by,
+      category
     });
 
-    console.log("✅ Hack updated successfully:", updatedHack);
     res.json(updatedHack);
   } catch (error) {
-    console.error("❌ Error updating hack:", error);
+    console.error("Error updating hack:", error);
     res.status(500).json({ error: "Failed to update hack" });
   }
 });
 
-
 // 8. Delete a hack
-router.delete("/hacks/:id", async (req, res) => {
+router.delete("/hacks/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   try {
     const hack = await HackSQL.findByPk(id);
     if (!hack) {
       return res.status(404).json({ error: "Hack not found" });
     }
+    
+    // Verify the user owns this hack
+    if (hack.created_by !== req.user.id) {
+      return res.status(403).json({ error: "Not authorized to delete this hack" });
+    }
+
     await hack.destroy();
     res.status(200).json({ message: "Hack deleted successfully" });
   } catch (error) {
@@ -157,16 +167,22 @@ router.delete("/hacks/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete hack" });
   }
 });
+
 // 9. Delete a user by ID
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   try {
+    // Only allow admins or the user themselves to delete accounts
+    if (req.user.id !== parseInt(id) && !req.user.isAdmin) {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
     const user = await UserSQL.findByPk(id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Optionally: Delete all hacks created by this user (if needed)
+    // Delete all hacks created by this user
     await HackSQL.destroy({ where: { created_by: id } });
 
     // Delete the user
@@ -177,6 +193,5 @@ router.delete("/users/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete user" });
   }
 });
-
 
 module.exports = router;

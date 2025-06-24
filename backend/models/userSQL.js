@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../postgresDatabase');
+const bcrypt = require("bcryptjs");
 
 const UserSQL = sequelize.define('UserSQL', {
   id: {
@@ -21,8 +22,13 @@ const UserSQL = sequelize.define('UserSQL', {
     allowNull: false,
   },
 }, {
-  tableName: 'users',  // Correct table name
-  timestamps: false,  // Disable automatic timestamps if not required
+  tableName: 'users',
+  timestamps: false,
+  hooks: {
+    beforeCreate: async (user) => {
+      user.password = await bcrypt.hash(user.password, 10);
+    }
+  }
 });
 
 module.exports = UserSQL;
